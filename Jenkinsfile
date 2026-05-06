@@ -15,23 +15,13 @@ pipeline {
 
         stage('Build & Push') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh '''
-                        echo "Build & Push (Linux)"
+                sh '''
+                docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend
+                docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend
 
-                        docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend
-                        docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend
-                        '''
-                    } else {
-                        bat '''
-                        echo Build & Push (Windows)
-
-                        docker build -t %DOCKERHUB_USERNAME%/backend-naura:latest ./backend
-                        docker build -t %DOCKERHUB_USERNAME%/frontend-naura:latest ./frontend
-                        '''
-                    }
-                }
+                docker push $DOCKERHUB_USERNAME/backend-naura:latest
+                docker push $DOCKERHUB_USERNAME/frontend-naura:latest
+                '''
             }
         }
 
