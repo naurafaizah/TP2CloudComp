@@ -39,7 +39,7 @@ pipeline {
 
         stage('Deploy to AKS') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh 'kubectl apply -f yaml/'
             }
         }
     }
