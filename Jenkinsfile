@@ -37,7 +37,7 @@ pipeline {
 
         stage('Deploy ke Azure AKS') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh 'kubectl apply -f yaml/'
             }
         }
     }
