@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'URL_REPO_GITHUB_KAMU'
+                git 'https://github.com/naurafaizah/TP2CloudComp.git'
             }
         }
 
