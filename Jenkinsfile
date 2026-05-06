@@ -10,10 +10,9 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/naurafaizah/TP2CloudComp.git'
+                git branch: 'main', url: 'https://github.com/naurafaizah/TP2CloudComp.git'
             }
         }
-
         stage('Build Backend') {
             steps {
                 sh 'docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend'
