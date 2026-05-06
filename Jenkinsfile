@@ -13,19 +13,35 @@ pipeline {
             }
         }
 
-        stage('Test Stage') {
-            steps {
-                echo 'Pipeline jalan sampai sini'
-            }
-        }
-
-        stage('Build Backend') {
+        stage('Build & Push') {
             steps {
                 script {
                     if (isUnix()) {
-                        sh 'docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend'
+                        sh '''
+                        echo "Build & Push (Linux)"
+
+                        docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend
+                        docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend
+                        '''
                     } else {
-                        bat 'docker build -t %DOCKERHUB_USERNAME%/backend-naura:latest ./backend'
+                        bat '''
+                        echo Build & Push (Windows)
+
+                        docker build -t %DOCKERHUB_USERNAME%/backend-naura:latest ./backend
+                        docker build -t %DOCKERHUB_USERNAME%/frontend-naura:latest ./frontend
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'kubectl apply -f yaml/'
+                    } else {
+                        bat 'kubectl apply -f yaml/'
                     }
                 }
             }
