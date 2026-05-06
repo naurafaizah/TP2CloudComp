@@ -1,43 +1,33 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
         DOCKERHUB_USERNAME = 'naurafaizah'
     }
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/naurafaizah/TP2CloudComp.git'
             }
         }
 
-        stage('Build & Push Docker Image') {
+        stage('Test Stage') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh '''
-                    echo $PASS | docker login -u $USER --password-stdin
-
-                    docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend
-                    docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend
-
-                    docker push $DOCKERHUB_USERNAME/backend-naura:latest
-                    docker push $DOCKERHUB_USERNAME/frontend-naura:latest
-                    '''
-                }
+                echo 'Pipeline jalan sampai sini'
             }
         }
 
-        stage('Deploy ke Azure AKS') {
+        stage('Build Backend') {
             steps {
-                sh 'kubectl apply -f yaml/'
+                script {
+                    if (isUnix()) {
+                        sh 'docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend'
+                    } else {
+                        bat 'docker build -t %DOCKERHUB_USERNAME%/backend-naura:latest ./backend'
+                    }
+                }
             }
         }
     }
