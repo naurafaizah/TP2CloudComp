@@ -15,16 +15,29 @@ pipeline {
 
         stage('Build & Push') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh '''
-                        docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend
-                        docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend
-                        docker push $DOCKERHUB_USERNAME/backend-naura:latest
-                        docker push $DOCKERHUB_USERNAME/frontend-naura:latest
-                        '''
-                    } else {
-                        bat '"C:\\Program Files\\Git\\bin\\sh.exe" -c "docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend && docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend && docker push $DOCKERHUB_USERNAME/backend-naura:latest && docker push $DOCKERHUB_USERNAME/frontend-naura:latest"'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    script {
+                        if (isUnix()) {
+                            sh '''
+                            echo $PASS | docker login -u $USER --password-stdin
+
+                            docker build -t naurafaizah/backend-naura:latest ./backend
+                            docker build -t naurafaizah/frontend-naura:latest ./frontend
+
+                            docker push naurafaizah/backend-naura:latest
+                            docker push naurafaizah/frontend-naura:latest
+                            '''
+                        } else {
+                            bat '''
+                            echo %PASS% | docker login -u %USER% --password-stdin
+
+                            docker build -t naurafaizah/backend-naura:latest ./backend
+                            docker build -t naurafaizah/frontend-naura:latest ./frontend
+
+                            docker push naurafaizah/backend-naura:latest
+                            docker push naurafaizah/frontend-naura:latest
+                            '''
+                        }
                     }
                 }
             }
