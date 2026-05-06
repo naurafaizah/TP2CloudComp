@@ -24,14 +24,7 @@ pipeline {
                         docker push $DOCKERHUB_USERNAME/frontend-naura:latest
                         '''
                     } else {
-                        bat '''
-                        "C:\\Program Files\\Git\\bin\\sh.exe" -c "
-                        docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend &&
-                        docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend &&
-                        docker push $DOCKERHUB_USERNAME/backend-naura:latest &&
-                        docker push $DOCKERHUB_USERNAME/frontend-naura:latest
-                        "
-                        '''
+                        bat '"C:\\Program Files\\Git\\bin\\sh.exe" -c "docker build -t $DOCKERHUB_USERNAME/backend-naura:latest ./backend && docker build -t $DOCKERHUB_USERNAME/frontend-naura:latest ./frontend && docker push $DOCKERHUB_USERNAME/backend-naura:latest && docker push $DOCKERHUB_USERNAME/frontend-naura:latest"'
                     }
                 }
             }
