@@ -15,43 +15,32 @@ pipeline {
 
         stage('Build & Push') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    script {
-                        if (isUnix()) {
-                            sh '''
-                            echo $PASS | docker login -u $USER --password-stdin
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'USER',
+                        passwordVariable: 'PASS'
+                    )
+                ]) {
 
-                            docker build -t naurafaizah/backend-naura:latest ./backend
-                            docker build -t naurafaizah/frontend-naura:latest ./frontend
+                    sh '''
+                    echo $PASS | docker login -u $USER --password-stdin
 
-                            docker push naurafaizah/backend-naura:latest
-                            docker push naurafaizah/frontend-naura:latest
-                            '''
-                        } else {
-                            bat '''
-                            echo %PASS% | docker login -u %USER% --password-stdin
+                    docker build -t naurafaizah/backend-naura:latest ./backend
+                    docker build -t naurafaizah/frontend-naura:latest ./frontend
 
-                            docker build -t naurafaizah/backend-naura:latest ./backend
-                            docker build -t naurafaizah/frontend-naura:latest ./frontend
-
-                            docker push naurafaizah/backend-naura:latest
-                            docker push naurafaizah/frontend-naura:latest
-                            '''
-                        }
-                    }
+                    docker push naurafaizah/backend-naura:latest
+                    docker push naurafaizah/frontend-naura:latest
+                    '''
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    if (isUnix()) {
-                        sh 'kubectl apply -f yaml/'
-                    } else {
-                        bat 'kubectl apply -f yaml/'
-                    }
-                }
+                sh '''
+                kubectl apply -f yaml/
+                '''
             }
         }
     }
